@@ -1,0 +1,399 @@
+*, *::after, *::before {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+} 
+
+:root {
+  --cell-size: 10rem;
+  --mark-size: calc(var(--cell-size) * .9);
+  --initialScreen_BG_color: rgb(228, 228, 228);
+  --gameScreen_BG_color: rgb(36, 164, 255);
+  --hover-color: rgb(75, 177, 250);
+  --overlay-color: rgba(0, 0, 0, 0.85);
+  --newGameButton-color: rgb(20, 138, 1);
+  --newGameButton-disabled-color: rgb(20, 138, 1, 0.25);
+  --joinGameButton-color: rgba(26, 115, 232);
+  --joinGameButton-disabled-color: rgba(26, 115, 232, 0.293);
+  --error-color: rgba(217, 48, 37);
+  --endGameButtons_BG_color: rgba(67, 67, 253, 0.5);
+  --endGameButtons_BG_hover_color: rgba(67, 67, 253);
+}
+
+h1, h2, button, input {
+  padding: 2rem;
+  margin: 0.5rem;
+}
+
+li {
+  padding: 0.25rem;
+}
+
+p {
+  padding: 1rem;
+  margin: 1rem;
+}
+
+.row {
+  display:flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.center-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#instructions {
+  background-color: rgba(255, 156, 43, 0.473);
+  padding: 1rem;
+  margin: 2rem;
+  border-radius: 1rem;
+}
+
+#title-steps {
+  padding: 0;
+}
+
+.underline {
+  text-decoration: underline
+}
+
+#initialScreen {
+  background-color: var(--initialScreen_BG_color);
+  height: 100vh;
+  width: 100vw;
+}
+
+#gameScreen {
+  display: none;
+  position: relative; /* to facilitate putting one div on top of another with postion:absolute */
+}
+
+#waitForPlayerScreen {
+  display: none;
+  height: 100vh;
+  width: 100vw;
+  background-color: var(--initialScreen_BG_color);
+  
+}
+
+#overlayPlayerWon-wrapper {
+  display: none;
+}
+
+#overlayWait-wrapper {
+  display: none;
+}
+/* ****************************************************************** */
+/* **************************  GAME BOARD  ************************** */
+#board {
+  position:absolute;
+  background-color: var(--gameScreen_BG_color);
+  width: 100vw;
+  height: 100vh;
+  display: grid;
+  justify-content: center;
+  align-content: center;
+  justify-items: center;
+  align-items: center;
+  grid-template-columns: repeat(3, auto)
+}
+
+.cell {
+  height: var(--cell-size);
+  width: var(--cell-size);
+  border: 1px solid black;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.cell:first-child,
+.cell:nth-child(2),
+.cell:nth-child(3) {
+  border-top: none;
+}
+
+.cell:nth-child(3n + 1) {
+  border-left: none;
+}
+
+.cell:nth-child(3n + 3) {
+  border-right: none;
+}
+
+.cell:last-child,
+.cell:nth-child(8),
+.cell:nth-child(7) {
+  border-bottom: none;
+}
+
+.cell.x,
+.cell.circle {
+  cursor: not-allowed;
+}
+
+.cell.x::before,
+.cell.x::after,
+.cell.circle::before {
+  background-color: black;
+}
+
+/* hover color */
+.board.x .cell:not(.x):not(.circle):hover::before,
+.board.x .cell:not(.x):not(.circle):hover::after,
+.board.circle .cell:not(.x):not(.circle):hover::before {
+  background-color: var(--hover-color);
+}
+
+
+/* Define X shape */
+.cell.x::before,
+.cell.x::after,
+.board.x .cell:not(.x):not(.circle):hover::before,
+.board.x .cell:not(.x):not(.circle):hover::after {
+  content: '';
+  position: absolute;
+  width: calc(var(--mark-size) * .15);
+  height: var(--mark-size);
+}
+.cell.x::before,
+.board.x .cell:not(.x):not(.circle):hover::before {
+  transform: rotate(45deg);
+}
+.cell.x::after,
+.board.x .cell:not(.x):not(.circle):hover::after {
+  transform: rotate(-45deg);
+}
+
+/* Define circle shape */
+.cell.circle::before,
+.cell.circle::after,
+.board.circle .cell:not(.x):not(.circle):hover::before,
+.board.circle .cell:not(.x):not(.circle):hover::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+}
+.cell.circle::before,
+.board.circle .cell:not(.x):not(.circle):hover::before {
+  width: var(--mark-size);
+  height: var(--mark-size);
+}
+.cell.circle::after,
+.board.circle .cell:not(.x):not(.circle):hover::after {
+  width: calc(var(--mark-size) * .7);
+  height: calc(var(--mark-size) * .7);
+  background-color: var(--gameScreen_BG_color);;
+}
+/* ***************************************************************** */
+
+#overlayWaitForTurn {
+  z-index: 1;
+  position:absolute;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--overlay-color);
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+#connectingSpinner {
+  font-size: 1.5rem;
+  margin: 2rem;
+}
+
+
+#playerWonOverlay {
+  z-index:1;
+  position:absolute;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--overlay-color);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#copyBtn {
+  height: 4rem;
+  width: 4rem;
+  background-color: var(--initialScreen_BG_color);
+  
+  border: none;
+  padding: 1rem;
+
+  content: attr(data-tooltip);
+  position: relative;
+}
+
+/* copyBtn's tooltip */
+#copyBtn::before, 
+#copyBtn::after {
+  --scale: 0;
+  --arrow-size: 0.5rem;
+  --tooltip-color: rgba(0, 0, 0, 0.598);
+
+  position: absolute;
+  top: -.25rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(var(--translate-y, 0)) scale(var(--scale));
+  transition: 150ms transform;
+  transform-origin: bottom center;
+}
+
+/* main tooltip box message */
+#copyBtn::before {
+  --translate-y: calc(-100% - var(--arrow-size));
+
+  content: attr(data-tooltip);
+  color: white;
+  padding: .5rem;
+  border-radius: .3rem;
+  text-align: center;
+  width: max-content;
+  max-width: 10rem;
+  background: var(--tooltip-color);
+}
+
+#copyBtn:hover::before,
+#copyBtn:hover::after {
+  --scale: 1;
+}
+
+/* tooltip arrow */
+#copyBtn::after {
+  --translate-y: calc(-1 * var(--arrow-size));
+
+  content: '';
+  border: var(--arrow-size) solid transparent;
+  border-top-color: var(--tooltip-color);
+  transform-origin: top center;
+}
+
+/* style buttons */
+#newGameButton {
+  font-size: 1rem;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 0.5rem;
+  background-color: var(--newGameButton-color);
+  color: white;
+  cursor: pointer;
+  box-shadow: 3px 3px 8px #b3b3b3d3;
+  transition: all .3s ease;
+  transform: translateY(0px);
+}
+
+#newGameButton:hover,
+#joinGameButton:hover {
+  transition: all .3s ease;
+
+  /* box-shadow: 5px 5px #888888; */
+  box-shadow: 5px 5px 5px #b3b3b3d3;
+
+  /* Change position */
+  transform: translateY(-3px);
+}
+
+#title {
+  font-size: 3rem;
+  padding-bottom: 4rem;
+}
+
+#gameCodeInput {
+  padding: 0.5rem;
+  width: 18rem;
+  text-align: center; 
+  border: 3px solid var(--joinGameButton-color);;
+  border-radius: 0.25rem;                
+}
+
+#error-message {
+  color :var(--error-color);
+  font-weight: bold;
+}
+
+
+#icon-error {
+  color: var(--error-color);
+  margin-right: 0.5rem;
+}
+
+#gameCodeDisplay {
+  background-color: white;
+  color:rgb(7, 137, 22);
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+}
+
+.hide {
+  display: none;
+}
+
+input.error-border {
+  border-color: var(--error-color) !important;
+}
+
+#yourGameCode-text {
+  margin: 0;
+  padding: 2rem;;
+  background-color: var(--initialScreen_BG_color);;
+}
+
+
+
+#gameCodeInput::placeholder {                            
+  /* Firefox, Chrome, Opera, Edge */ 
+  text-align: center; 
+}  
+
+#joinGameButton {   
+  color: white;
+  background-color: var(--joinGameButton-color);;   
+  font-size: 1rem;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 0.5rem;                
+  cursor: pointer;
+  box-shadow: 3px 3px 8px #b3b3b3d3;
+  transition: all .3s ease;
+  transform: translateY(0px);
+}  
+
+#joinGameButton:disabled {
+  background-color: var(--joinGameButton-disabled-color); 
+}
+
+#newGameButton:disabled {
+  background-color: var(--newGameButton-disabled-color); 
+}
+
+#playAgainBtn, #restartBtn {
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 1rem;
+  background-color: var(--endGameButtons_BG_color);
+  transition: background-color 0.25s ease-in-out;
+  color: white;
+  border: none;
+}
+
+#playAgainBtn:hover, #restartBtn:hover {
+  background-color: var(--endGameButtons_BG_hover_color);
+}
