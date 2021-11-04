@@ -9,7 +9,7 @@ To see a demo on how to use this app, watch this:
 https://www.youtube.com/watch?v=LB65Bh7NU6o&ab_channel=DavidCarrasco
 
 This app allows you to play the tic-tac-toe (tres en raya) game against anyone in the world in real time, using 
-websockets for the communication.
+websockets for the communication between players.
 
 You can play against yourself by opening the app twice, each in a different tab in your browser.
 
