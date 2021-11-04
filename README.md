@@ -13,8 +13,8 @@ websockets for the communication between players.
 
 You can play against yourself by opening the app twice, each in a different tab in your browser.
 
-When you start a game you are given a game ID, which you can give to your opponent so he can join your room and
-play against you.
+When you start a game you are given a game ID, which you can give to your opponent (via email, whatsApp, or something like that)
+so he can join your room and play against you.
 
 The frontend was done in vanilla JavaScript (no frameworks such as React or Angular) and the backend was made with
 NodeJS and websockets protocol.
